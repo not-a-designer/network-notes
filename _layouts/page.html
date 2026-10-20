@@ -1,0 +1,9 @@
+---
+layout: default
+---
+<header class="page-heading">
+  <p class="eyebrow">{{ page.eyebrow | default: 'Network Notes' | escape }}</p>
+  <h1>{{ page.title | escape }}</h1>
+  {% if page.description %}<p class="lede">{{ page.description | escape }}</p>{% endif %}
+</header>
+<div class="prose page-prose">{{ content }}</div>

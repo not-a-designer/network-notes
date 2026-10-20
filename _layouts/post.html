@@ -1,0 +1,15 @@
+---
+layout: default
+---
+<article class="article">
+  <header class="article-heading">
+    <a class="back-link" href="{{ '/' | relative_url }}">← All notes</a>
+    <div class="post-meta"><span>{{ page.kind | default: 'Learning note' | escape }}</span><span aria-hidden="true">/</span><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%B %-d, %Y' }}</time><span aria-hidden="true">/</span><span>{% assign words = content | number_of_words %}{{ words | divided_by: 200 | plus: 1 }} min read</span></div>
+    <h1>{{ page.title | escape }}</h1>
+    <p class="lede">{{ page.summary | escape }}</p>
+    {% include tags.html tags=page.tags %}
+    {% if page.updated %}<p class="updated">Updated <time datetime="{{ page.updated | date_to_xmlschema }}">{{ page.updated | date: '%B %-d, %Y' }}</time></p>{% endif %}
+  </header>
+  <div class="prose">{{ content }}</div>
+  <footer class="article-footer"><span class="eyebrow">Keep exploring</span><a href="{{ '/topics/' | relative_url }}">Browse notes by topic →</a></footer>
+</article>

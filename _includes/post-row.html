@@ -1,0 +1,4 @@
+<article class="post-row">
+  <div class="post-date"><time datetime="{{ include.post.date | date_to_xmlschema }}">{{ include.post.date | date: '%b %-d, %Y' }}</time><span>{{ include.post.kind | default: 'Learning note' | escape }}</span></div>
+  <div class="post-detail"><h3><a href="{{ include.post.url | relative_url }}">{{ include.post.title | escape }} <span class="post-arrow" aria-hidden="true">↗</span></a></h3><p>{{ include.post.summary | escape }}</p>{% include tags.html tags=include.post.tags %}</div>
+</article>

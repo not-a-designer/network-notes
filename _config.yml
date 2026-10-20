@@ -1,0 +1,49 @@
+title: Network Notes
+description: A field journal on networking fundamentals, home lab experiments, and the path toward the CCNA.
+url: "https://not-a-designer.github.io"
+baseurl: "/network-notes"
+lang: en
+timezone: America/Chicago
+permalink: /posts/:slug/
+future: false
+strict_front_matter: true
+markdown: kramdown
+highlighter: rouge
+
+# Keep personal details here. Empty values are intentionally hidden.
+author:
+  name: ""
+  bio: "Building a foundation in networking, one question and one experiment at a time."
+  certification: ""
+social_links:
+  github: "https://github.com/not-a-designer"
+  linkedin: ""
+  resume: ""
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: page
+      image: /assets/images/social-card.png
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      featured: false
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - templates
+  - scripts
+  - vendor
+  - .bundle
+  - .github
