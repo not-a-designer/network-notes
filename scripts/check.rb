@@ -72,7 +72,12 @@ def inspect_build(site, destination, base)
   %w[feed.xml sitemap.xml].each do |name|
     xml = File.read(File.join(destination, name))
     REXML::Document.new(xml)
-    site.posts.docs.each { |post| assert(xml.include?(post.url), "Missing published post from #{name}") }
+    expected_posts = site.posts.docs
+    if name == 'feed.xml'
+      limit = site.config.dig('feed', 'posts_limit') || 10
+      expected_posts = expected_posts.sort_by(&:date).reverse.first(limit)
+    end
+    expected_posts.each { |post| assert(xml.include?(post.url), "Missing published post from #{name}") }
   end
   assert(!File.exist?(File.join(destination, 'templates')), 'Templates leaked into site')
   assert(!File.exist?(File.join(destination, 'scripts')), 'Build scripts leaked into site')
@@ -132,7 +137,23 @@ Dir.mktmpdir('network-notes-check-') do |temporary|
     assert(File.read(File.join(destination, 'index.html')).include?('Selected work'), 'Featured placement missing')
     assert(File.read(File.join(destination, 'topics/index.html')).include?('routing'), 'Topic missing')
     assert(File.read(File.join(destination, 'lab/index.html')).include?('QA visible post'), 'Lab report missing from lab page')
+    if base.empty? && ENV['QA_PREVIEW']
+      FileUtils.cp_r(destination, ENV.fetch('QA_PREVIEW'))
+    end
     puts "PASS single post, featured work, topics, lab report, draft exclusion, baseurl=#{base.inspect}"
   end
+  # The feed intentionally contains only recent posts; the sitemap covers the archive.
+  11.times do |index|
+    day = format('%02d', index + 1)
+    File.write(File.join(source, "_posts/2020-02-#{day}-archive-#{day}.md"), "---\ntitle: Archive #{day}\nsummary: Feed boundary fixture\ntags: [routing]\nkind: Learning note\npublished: true\n---\nArchive fixture.\n")
+  end
+  destination = File.join(temporary, 'archive')
+  site = build(source, destination, '/network-notes')
+  inspect_build(site, destination, '/network-notes')
+  feed = REXML::Document.new(File.read(File.join(destination, 'feed.xml')))
+  assert(REXML::XPath.match(feed, '//atom:entry', { 'atom' => 'http://www.w3.org/2005/Atom' }).size == 10, 'Expected latest ten RSS entries')
+  assert(!File.read(File.join(destination, 'feed.xml')).include?('/posts/qa-visible/'), 'Oldest post should have aged out of the RSS feed')
+  assert(File.read(File.join(destination, 'sitemap.xml')).include?('/posts/qa-visible/'), 'Older posts must remain in the sitemap')
+  puts 'PASS twelve-post archive and ten-entry RSS limit'
 end
 puts 'All content and build checks passed.'
