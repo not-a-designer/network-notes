@@ -27,6 +27,13 @@ jobs:
         run: bundle exec ruby scripts/check.rb
         env:
           JEKYLL_ENV: production
+          QA_PREVIEW: ${{ runner.temp }}/network-notes-preview
+      - name: Save isolated article preview for visual checks
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-preview
+          path: ${{ runner.temp }}/network-notes-preview
+          retention-days: 1
       - name: Build the deployment artifact
         run: bundle exec jekyll build --trace
         env:
